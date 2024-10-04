@@ -6,14 +6,16 @@ import subprocess
 
 
 C1_FRAMEWORKS = [
-    'flask_marshmallow_uwsgi',
+    # 'flask_marshmallow_uwsgi',
     'drf_uwsgi',
     'ninja_uwsgi',
 ]
 
 CONCURRENT_FRAMEWORKS = [
-    'flask_marshmallow_uwsgi',
+    # 'flask_marshmallow_uwsgi',
     'drf_uwsgi',
+    'ninja_uwsgi',
+    'drf_uvicorn',
     'ninja_uvicorn',
 ]
 
@@ -63,7 +65,8 @@ def run_c1_test():
     return benchmark('http://127.0.0.1:8000/api/create', 1, 1000, 'payload.json')
 
 
-WORKERS_CASES = list(range(1, 25))  # [14, 15, 16, 17, 18, 19, 20]
+# WORKERS_CASES = list(range(1, 25))  # [14, 15, 16, 17, 18, 19, 20]
+WORKERS_CASES = list(range(1, 5))  # [14, 15, 16, 17, 18, 19, 20]
 
 
 def test_concurrent(name):
@@ -72,7 +75,9 @@ def test_concurrent(name):
     for workers in WORKERS_CASES:
         with FrameworkService(name, workers):
             preheat()
-            res = benchmark('http://127.0.0.1:8000/api/iojob', 50, 200)
+            # TODO: switch between /api/iojob and /api/create
+            # res = benchmark('http://127.0.0.1:8000/api/iojob', 50, 200)
+            res = benchmark('http://127.0.0.1:8000/api/create', 1, 1000, 'payload.json')
             results[workers] = res
     return results
 

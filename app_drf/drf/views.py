@@ -3,6 +3,7 @@ import requests
 from rest_framework import serializers
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+import aiohttp
 
 
 class Location(serializers.Serializer):
@@ -45,11 +46,21 @@ class Model(serializers.Serializer):
 def create(request):
     data = Model(data=json.loads(request.body))
     assert data.is_valid()
+    print(data.validated_data)
     return Response({'success': True})
 
+
+# TODO: switch for sync / async
+# @api_view(['GET'])
+# def iojob(request):
+#     # response = requests.get('http://network_service:8000/job')
+#     # assert response.status_code == 200
+#     return Response({'success': True})
 
 @api_view(['GET'])
-def iojob(request):
-    response = requests.get('http://network_service:8000/job')
-    assert response.status_code == 200
-    return Response({'success': True})
+async def iojob(request):
+    """ Async """
+    async with aiohttp.ClientSession() as http_client:
+        r = await http_client.get('http://network_service:8000/job')
+        data = await r.text()
+    return {"success": True}

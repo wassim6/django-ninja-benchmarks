@@ -4,6 +4,7 @@ from typing import List
 from ninja import NinjaAPI
 from ninja.schema import Schema
 from pydantic import PositiveInt, constr
+import requests
 
 
 class Location(Schema):
@@ -41,12 +42,22 @@ api = NinjaAPI()
 
 @api.post("/create")
 def create(request, model: Model):
+    print(model)
     return {"success": True}
 
 
 @api.get("/iojob")
 async def iojob(request):
+    """ Async call """
     async with aiohttp.ClientSession() as http_client:
         r = await http_client.get('http://network_service:8000/job')
         data = await r.text()
     return {"success": True}
+
+# TODO: switch for sync / async
+# @api.get("/iojob")
+# def iojob(request):
+#     """ Sync call """"
+#     response = requests.get('http://network_service:8000/job')
+#     assert response.status_code == 200
+#     return Response({'success': True})

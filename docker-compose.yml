@@ -10,15 +10,20 @@ x-common: &common
 # see the run_test.py for details
 
 services:
-  flask_marshmallow_uwsgi:
-    <<: *common
-    working_dir: /app_flask_marshmallow
-    command: uwsgi --http 0.0.0.0:8000 --module main:app --workers ${WORKERS}
-  
+#  flask_marshmallow_uwsgi:
+#    <<: *common
+#    working_dir: /app_flask_marshmallow
+#    command: uwsgi --http 0.0.0.0:8000 --module main:app --workers ${WORKERS}
+
   drf_uwsgi:
     <<: *common
     working_dir: /app_drf
     command: uwsgi --http 0.0.0.0:8000 --module drf.wsgi:application --workers ${WORKERS}
+
+  drf_uvicorn:
+    <<: *common
+    working_dir: /app_drf
+    command: uwsgi --http 0.0.0.0:8000 --module drf.asgi:application --workers ${WORKERS}
 
   ninja_uwsgi:
     <<: *common
