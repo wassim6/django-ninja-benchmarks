@@ -51,16 +51,16 @@ def create(request):
 
 
 # TODO: switch for sync / async
-# @api_view(['GET'])
-# def iojob(request):
-#     # response = requests.get('http://network_service:8000/job')
-#     # assert response.status_code == 200
-#     return Response({'success': True})
-
 @api_view(['GET'])
-async def iojob(request):
-    """ Async """
-    async with aiohttp.ClientSession() as http_client:
-        r = await http_client.get('http://network_service:8000/job')
-        data = await r.text()
-    return {"success": True}
+def iojob(request):
+    response = requests.get('http://network_service:8000/job')
+    assert response.status_code == 200
+    return Response({'success': True})
+
+# @api_view(['GET'])
+# async def iojob(request):
+#     """ Async """
+#     async with aiohttp.ClientSession() as http_client:
+#         r = await http_client.get('http://network_service:8000/job')
+#         data = await r.text()
+#     return {"success": True}
