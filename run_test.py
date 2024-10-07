@@ -1,22 +1,25 @@
 import time
 import re
 import os
-import sys
 import subprocess
 
 
 C1_FRAMEWORKS = [
     # 'flask_marshmallow_uwsgi',
-    'drf_uwsgi',
-    'ninja_uwsgi',
+    # 'drf_uwsgi',
+    # 'ninja_uwsgi',
+    'drf_gunicorn',
+    'ninja_gunicorn',
 ]
 
 CONCURRENT_FRAMEWORKS = [
     # 'flask_marshmallow_uwsgi',
-    'drf_uwsgi',
-    'ninja_uwsgi',
-    'drf_uvicorn',
-    'ninja_uvicorn',
+    # 'drf_uwsgi',
+    # 'ninja_uwsgi',
+    'drf_gunicorn',
+    'ninja_gunicorn',
+    # 'drf_uvicorn',
+    # 'ninja_uvicorn',
 ]
 
 
@@ -26,12 +29,12 @@ class FrameworkService:
         self.workers = workers
 
     def __enter__(self):
-        os.system(f'WORKERS={self.workers} docker-compose up -d network_service')
-        os.system(f'WORKERS={self.workers} docker-compose up -d {self.name}')
+        os.system(f'WORKERS={self.workers} docker compose up -d network_service')
+        os.system(f'WORKERS={self.workers} docker compose up -d {self.name}')
         time.sleep(5)
 
     def __exit__(self, *a, **kw):
-        os.system(f'WORKERS={self.workers} docker-compose down')
+        os.system(f'WORKERS={self.workers} docker compose down')
 
 
 def benchmark(url, concurency, count, payload=None):
@@ -47,13 +50,10 @@ def benchmark(url, concurency, count, payload=None):
 
 
 def parse_benchmark(output: str):
-    # print(output)
     rps = re.findall(r'Requests per second: \s+(.*?)\s', output)[0]
     p50 = re.findall(r'\s+50%\s+(\d+)', output)[0]
     p99 = re.findall(r'\s+99%\s+(\d+)', output)[0]
-    return (rps, p50, p99)
-    # print()
-    # re.findall(r'')
+    return rps, p50, p99
 
 
 def preheat():
@@ -83,8 +83,8 @@ def test_concurrent(name):
 
 
 def main():
-    os.system(f'docker-compose build')
-    os.system(f'docker-compose down')
+    os.system(f'docker compose build')
+    os.system(f'docker compose down')
 
     results = {}
     for framework in CONCURRENT_FRAMEWORKS:
